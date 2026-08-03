@@ -1,0 +1,13 @@
+interface:
+  display_name: "Implement Document First Story"
+  short_description: "Triển khai Story theo tài liệu đã phê duyệt"
+  default_prompt: "Use $implement-story to implement an approved Document First Story with its related business rules."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "document-first"
+      description: "Document First approved-document context"
+      transport: "streamable_http"
+      url: "https://document-api.vnzdna.com/mcp"
+policy:
+  allow_implicit_invocation: true

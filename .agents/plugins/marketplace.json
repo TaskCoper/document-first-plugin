@@ -1,0 +1,20 @@
+{
+  "name": "document-first-local",
+  "interface": {
+    "displayName": "Document First Local"
+  },
+  "plugins": [
+    {
+      "name": "document-first",
+      "source": {
+        "source": "local",
+        "path": "./plugins/document-first"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

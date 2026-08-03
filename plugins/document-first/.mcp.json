@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "document-first": {
+      "type": "http",
+      "url": "https://document-api.vnzdna.com/mcp",
+      "auth": "oauth",
+      "oauth_resource": "https://document-api.vnzdna.com/mcp",
+      "scopes": [
+        "projects:read",
+        "documents:read",
+        "context:prepare",
+        "offline_access"
+      ]
+    }
+  }
+}

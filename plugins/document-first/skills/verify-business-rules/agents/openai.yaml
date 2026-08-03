@@ -1,0 +1,13 @@
+interface:
+  display_name: "Verify Business Rules"
+  short_description: "Đối chiếu code với Business Rule đã duyệt"
+  default_prompt: "Use $verify-business-rules to verify this implementation against approved Document First business rules."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "document-first"
+      description: "Document First approved-document context"
+      transport: "streamable_http"
+      url: "https://document-api.vnzdna.com/mcp"
+policy:
+  allow_implicit_invocation: true

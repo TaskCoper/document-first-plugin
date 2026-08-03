@@ -1,0 +1,40 @@
+{
+  "name": "document-first",
+  "version": "0.4.0+codex.20260803153657",
+  "description": "K\u1ebft n\u1ed1i Codex v\u1edbi ng\u1eef c\u1ea3nh nghi\u1ec7p v\u1ee5 \u0111\u00e3 ph\u00ea duy\u1ec7t trong Document First.",
+  "author": {
+    "name": "VNZ TECHNOLOGY COMPANY",
+    "email": "info@vnzdna.com",
+    "url": "https://document-first.vnzdna.com"
+  },
+  "homepage": "https://document-first.vnzdna.com",
+  "keywords": [
+    "business-rules",
+    "requirements",
+    "traceability"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "apps": "./.app.json",
+  "interface": {
+    "displayName": "Document First",
+    "shortDescription": "Tra c\u1ee9u y\u00eau c\u1ea7u v\u00e0 quy t\u1eafc nghi\u1ec7p v\u1ee5",
+    "longDescription": "Cung c\u1ea5p cho Codex ng\u1eef c\u1ea3nh User Story, Business Rule, TDD, API contract v\u00e0 t\u00e0i li\u1ec7u li\u00ean quan th\u00f4ng qua MCP server c\u1ee7a Document First.",
+    "developerName": "VNZ TECHNOLOGY COMPANY",
+    "category": "Developer Tools",
+    "websiteURL": "https://document-first.vnzdna.com",
+    "privacyPolicyURL": "https://document-first.vnzdna.com/privacy",
+    "termsOfServiceURL": "https://document-first.vnzdna.com/terms",
+    "capabilities": [
+      "Read"
+    ],
+    "defaultPrompt": [
+      "T\u00ecm ng\u1eef c\u1ea3nh c\u1ea7n thi\u1ebft \u0111\u1ec3 tri\u1ec3n khai STORY-001.",
+      "Li\u1ec7t k\u00ea c\u00e1c Business Rule li\u00ean quan \u0111\u1ebfn y\u00eau c\u1ea7u n\u00e0y.",
+      "Ph\u00e2n t\u00edch t\u00e1c \u0111\u1ed9ng c\u1ee7a t\u00e0i li\u1ec7u tr\u01b0\u1edbc khi s\u1eeda code."
+    ],
+    "brandColor": "#C84A12",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png"
+  }
+}
