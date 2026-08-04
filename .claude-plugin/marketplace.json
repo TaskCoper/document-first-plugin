@@ -1,0 +1,21 @@
+{
+  "name": "document-first-local",
+  "description": "Plugin Document First cho Claude Code và Cowork.",
+  "owner": {
+    "name": "VNZ TECHNOLOGY COMPANY",
+    "email": "info@vnzdna.com"
+  },
+  "plugins": [
+    {
+      "name": "document-first",
+      "source": "./plugins/document-first",
+      "description": "Kết nối Claude với ngữ cảnh nghiệp vụ đã được phê duyệt trong Document First.",
+      "category": "Developer Tools",
+      "tags": [
+        "business-rules",
+        "requirements",
+        "traceability"
+      ]
+    }
+  ]
+}
