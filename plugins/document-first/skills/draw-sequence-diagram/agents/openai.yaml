@@ -1,0 +1,13 @@
+interface:
+  display_name: "Vẽ Sequence Diagram"
+  short_description: "Vẽ Sequence Diagram theo API contract"
+  default_prompt: "Use $draw-sequence-diagram to model this interaction as a Mermaid sequence diagram."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "document-first"
+      description: "Document First approved-document context"
+      transport: "streamable_http"
+      url: "https://document-api.vnzdna.com/mcp"
+policy:
+  allow_implicit_invocation: true

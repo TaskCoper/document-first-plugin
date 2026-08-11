@@ -1,0 +1,13 @@
+interface:
+  display_name: "Vẽ State Diagram"
+  short_description: "Vẽ State Diagram Mermaid có guard rõ"
+  default_prompt: "Use $draw-state-diagram to model this lifecycle as a Mermaid state diagram with guarded transitions."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "document-first"
+      description: "Document First approved-document context"
+      transport: "streamable_http"
+      url: "https://document-api.vnzdna.com/mcp"
+policy:
+  allow_implicit_invocation: true

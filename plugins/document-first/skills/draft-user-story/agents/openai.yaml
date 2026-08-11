@@ -1,0 +1,13 @@
+interface:
+  display_name: "Soạn User Story"
+  short_description: "Soạn User Story theo cấu trúc Document First"
+  default_prompt: "Use $draft-user-story to turn this requirement into a complete Document First User Story draft."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "document-first"
+      description: "Document First approved-document context"
+      transport: "streamable_http"
+      url: "https://document-api.vnzdna.com/mcp"
+policy:
+  allow_implicit_invocation: true

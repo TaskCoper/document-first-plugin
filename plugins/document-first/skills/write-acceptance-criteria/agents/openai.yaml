@@ -1,0 +1,13 @@
+interface:
+  display_name: "Viết Acceptance Criteria"
+  short_description: "Viết AC kiểm thử được và truy vết rõ"
+  default_prompt: "Use $write-acceptance-criteria to derive testable acceptance criteria for this User Story."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "document-first"
+      description: "Document First approved-document context"
+      transport: "streamable_http"
+      url: "https://document-api.vnzdna.com/mcp"
+policy:
+  allow_implicit_invocation: true

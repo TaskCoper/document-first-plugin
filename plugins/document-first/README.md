@@ -153,9 +153,74 @@ mà được backend trả về theo quyền của từng người dùng.
 - `document_first_fetch`: đọc Markdown Approved và trả về thông tin định danh nội dung.
 - `document_first_prepare_story_context`: tìm story, resolve reference và tổng hợp approved-only
   context cho một yêu cầu triển khai.
+- `document_first_get_story`: đọc một User Story Approved dưới dạng field có cấu trúc (metadata,
+  flow, acceptance criteria, reference) thay vì Markdown thô.
+- `document_first_list_rules`: duyệt danh sách Business Rule Approved kèm phân trang, hoặc đọc
+  Markdown đầy đủ của các rule chỉ định qua `documentKeys`.
 
 Tất cả tool hiện tại đều read-only. Plugin không sửa tài liệu, approve nội dung, commit code hoặc
 push lên GitHub.
+
+### Tool dành cho reviewer (không có trong cấu hình mặc định)
+
+Hai tool dưới đây đọc nội dung **chưa được phê duyệt** nên nằm sau một scope OAuth riêng,
+`documents:read.draft`, và không được cấu hình mặc định:
+
+- `document_first_review_queue`: liệt kê tài liệu đang chờ duyệt mà chính bạn được giao làm
+  reviewer hoặc approver. Chỉ trả metadata.
+- `document_first_fetch_draft`: đọc Markdown bản nháp của tài liệu Draft/InReview. Dành cho
+  Owner/Admin của dự án, hoặc người được giao review đúng tài liệu đó.
+
+Phản hồi của `document_first_fetch_draft` **không có `approvalId`** và luôn kèm `unstable: true`:
+nội dung có thể đổi bất cứ lúc nào nên không được trích dẫn như nguồn đã phê duyệt, cũng không
+được dùng làm căn cứ khi implement.
+
+Scope này tách riêng có chủ đích. Người dùng thường không bao giờ bị hỏi quyền đọc bản nháp, và
+token đã cấp trước đó không tự nhiên đọc được nội dung chưa duyệt.
+
+**Cách bật cho manager, tech lead hoặc reviewer.** Thêm một MCP server thứ hai bên cạnh plugin
+chính, khai scope tường minh. Plugin chính giữ nguyên, không cần gỡ.
+
+Codex — thêm vào `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.document-first-review]
+type = "http"
+url = "https://document-api.vnzdna.com/mcp"
+auth = "oauth"
+oauth_resource = "https://document-api.vnzdna.com/mcp"
+scopes = [
+  "projects:read",
+  "documents:read",
+  "context:prepare",
+  "documents:read.draft",
+  "offline_access",
+]
+```
+
+Claude Code — thêm vào `.mcp.json` của dự án hoặc cấu hình người dùng:
+
+```json
+{
+  "mcpServers": {
+    "document-first-review": {
+      "type": "http",
+      "url": "https://document-api.vnzdna.com/mcp",
+      "oauth": {
+        "scopes": "projects:read documents:read context:prepare documents:read.draft offline_access"
+      }
+    }
+  }
+}
+```
+
+Sau khi thêm, mở phiên mới và hoàn tất OAuth cho server `document-first-review`. Màn hình consent
+sẽ hiện thêm một mục "Đọc tài liệu chưa phê duyệt để review".
+
+Lưu ý: `scopes_supported` trong discovery metadata của server **cố ý không liệt kê**
+`documents:read.draft`. Client MCP suy ra scope cần xin từ danh sách đó khi cấu hình không nói gì
+khác, nên quảng cáo scope này ở đấy sẽ khiến mọi người dùng thường đều bị hỏi consent. Vì vậy
+reviewer bắt buộc khai scope tường minh như trên; không có đường tự động phát hiện.
 
 ## 7. Cập nhật plugin
 

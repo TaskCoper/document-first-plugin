@@ -1,0 +1,13 @@
+interface:
+  display_name: "Vẽ Activity Diagram"
+  short_description: "Vẽ Activity Diagram Mermaid theo luồng"
+  default_prompt: "Use $draw-activity-diagram to model this workflow as a reviewable Mermaid activity diagram."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "document-first"
+      description: "Document First approved-document context"
+      transport: "streamable_http"
+      url: "https://document-api.vnzdna.com/mcp"
+policy:
+  allow_implicit_invocation: true

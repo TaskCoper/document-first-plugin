@@ -8,13 +8,18 @@ description: Xác minh implementation, pull request hoặc test suite theo Busin
 ## Lấy nguồn chuẩn
 
 1. Xác định `projectId`; gọi `document_first_list_projects` nếu cần.
-2. Gọi `document_first_prepare_story_context` khi có Story. Nếu không có Story, dùng
-   `document_first_search` để tìm Business Rule/TDD/test rồi gọi `document_first_fetch` với
-   `contentHash` cho từng tài liệu cần kiểm.
-3. Chỉ chấp nhận nội dung Approved và ghi lại `documentKey`, `approvalId`, `contentHash`.
-4. Dừng với `Blocked` nếu rule bắt buộc chưa được phê duyệt, không có quyền hoặc reference quan
+2. Khi có Story: gọi `document_first_get_story` để lấy `acceptanceCriteria` đã tách
+   Given/When/Then và danh sách `references.rules`, rồi `document_first_list_rules` với
+   `documentKeys` đó để đọc trọn nội dung rule trong một lần gọi.
+3. Khi không có Story: gọi `document_first_list_rules` ở chế độ duyệt để thấy toàn bộ rule của
+   project, chọn ra rule thuộc phạm vi cần kiểm rồi đọc chi tiết bằng `documentKeys`. Dùng
+   `document_first_search` cho TDD và tài liệu test.
+4. Khoá nằm trong `missingKeys` nghĩa là rule không tồn tại hoặc chưa được phê duyệt — ghi
+   `Blocked` cho rule đó, không suy đoán nội dung.
+5. Chỉ chấp nhận nội dung Approved và ghi lại `documentKey`, `approvalId`, `contentHash`.
+6. Dừng với `Blocked` nếu rule bắt buộc chưa được phê duyệt, không có quyền hoặc reference quan
    trọng chưa resolve. Không suy đoán nội dung bí mật nằm ngoài phản hồi MCP.
-5. Không yêu cầu Release, GitHub commit hoặc liên kết GitHub repository.
+7. Không yêu cầu Release, GitHub commit hoặc liên kết GitHub repository.
 
 ## Kiểm chứng
 

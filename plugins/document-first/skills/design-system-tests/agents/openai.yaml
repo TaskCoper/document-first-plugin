@@ -1,0 +1,13 @@
+interface:
+  display_name: "Thiết kế System Test"
+  short_description: "Thiết kế System Test truy vết theo Story"
+  default_prompt: "Use $design-system-tests to derive traceable system test cases from this approved Story."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "document-first"
+      description: "Document First approved-document context"
+      transport: "streamable_http"
+      url: "https://document-api.vnzdna.com/mcp"
+policy:
+  allow_implicit_invocation: true

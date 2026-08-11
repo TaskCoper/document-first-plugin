@@ -1,0 +1,13 @@
+interface:
+  display_name: "Soạn TDD"
+  short_description: "Soạn TDD từ yêu cầu và contract đã duyệt"
+  default_prompt: "Use $draft-tdd to design a Document First TDD from the approved Story and Business Rules."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "document-first"
+      description: "Document First approved-document context"
+      transport: "streamable_http"
+      url: "https://document-api.vnzdna.com/mcp"
+policy:
+  allow_implicit_invocation: true

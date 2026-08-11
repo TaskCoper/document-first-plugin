@@ -1,0 +1,13 @@
+interface:
+  display_name: "Audit Traceability"
+  short_description: "Kiểm tra liên kết Story TDD BR và test"
+  default_prompt: "Use $audit-document-traceability to find coverage gaps across approved Document First documents."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "document-first"
+      description: "Document First approved-document context"
+      transport: "streamable_http"
+      url: "https://document-api.vnzdna.com/mcp"
+policy:
+  allow_implicit_invocation: true

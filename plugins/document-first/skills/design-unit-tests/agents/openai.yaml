@@ -1,0 +1,13 @@
+interface:
+  display_name: "Thiết kế Unit Test"
+  short_description: "Thiết kế Unit Test theo nhánh và biên"
+  default_prompt: "Use $design-unit-tests to design traceable unit test specifications for this implementation."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "document-first"
+      description: "Document First approved-document context"
+      transport: "streamable_http"
+      url: "https://document-api.vnzdna.com/mcp"
+policy:
+  allow_implicit_invocation: true
