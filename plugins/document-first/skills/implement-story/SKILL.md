@@ -23,6 +23,10 @@ description: Triển khai một User Story bằng context đã được phê duy
   `referenced_by_story`, `search_match`, rồi `semantic_related`.
 - Gọi `document_first_fetch` với `documentKey` và `contentHash` đã nhận khi cần đọc lại một tài
   liệu hoặc khi context package không chứa đủ nội dung để quyết định.
+- Cần soát lại Acceptance Criteria hoặc nhánh flow theo từng mục thì gọi `document_first_get_story`:
+  tool trả `acceptanceCriteria` và `flows` đã tách sẵn, chính xác hơn tự đọc lại Markdown.
+- Cần đọc nhiều Business Rule cùng lúc thì gọi `document_first_list_rules` với `documentKeys` thay
+  vì fetch từng rule.
 - Ghi nhận `documentKey`, `approvalId`, `contentHash`, Acceptance Criteria, Business Rule,
   API contract và test document liên quan.
 - Xem `unresolvedReferences` là khoảng trống cần nêu ra; không tự tạo nội dung cho reference đó.

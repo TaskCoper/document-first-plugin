@@ -11,10 +11,16 @@ description: Phân tích tác động của một Story, tài liệu hoặc thay
 2. Nếu có User Story, gọi `document_first_prepare_story_context`. Nếu chỉ có mô tả hoặc mã tài
    liệu khác, gọi `document_first_search`, sau đó `document_first_fetch` với `contentHash` cho các
    kết quả liên quan.
-3. Chỉ dùng nội dung Approved. Dừng và báo `Blocked` nếu tài liệu bắt buộc chưa được phê duyệt
+3. Khi thay đổi đụng tới quy tắc nghiệp vụ, duyệt toàn bộ Business Rule bằng
+   `document_first_list_rules` rồi đọc chi tiết bằng `documentKeys`. Search chỉ trả thứ khớp truy
+   vấn, nên không đủ để kết luận "không rule nào bị ảnh hưởng".
+4. Cần đối chiếu từng Acceptance Criteria hoặc nhánh flow của Story thì dùng
+   `document_first_get_story` để lấy bản đã tách cấu trúc.
+5. Chỉ dùng nội dung Approved. Dừng và báo `Blocked` nếu tài liệu bắt buộc chưa được phê duyệt
    hoặc người dùng không có quyền đọc.
-4. Ghi nhận `approvalId`, content hash, loại quan hệ và mọi `unresolvedReferences`.
-5. Không yêu cầu Release, GitHub commit hoặc liên kết GitHub repository.
+6. Ghi nhận `approvalId`, content hash, loại quan hệ và mọi `unresolvedReferences` hoặc
+   `missingKeys`.
+7. Không yêu cầu Release, GitHub commit hoặc liên kết GitHub repository.
 
 ## Đối chiếu repository
 

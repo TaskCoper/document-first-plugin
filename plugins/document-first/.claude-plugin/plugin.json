@@ -1,7 +1,7 @@
 {
   "name": "document-first",
   "displayName": "Document First",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Kết nối Claude với ngữ cảnh nghiệp vụ đã được phê duyệt trong Document First.",
   "author": {
     "name": "VNZ TECHNOLOGY COMPANY",

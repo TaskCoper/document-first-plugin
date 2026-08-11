@@ -48,11 +48,16 @@ claude plugin validate plugins/document-first
 claude --plugin-dir ./plugins/document-first
 ```
 
-Claude Code tự nạp ba skill dưới namespace `document-first`. Ví dụ:
+Claude Code tự nạp 13 skill dưới namespace `document-first`. Ví dụ:
 
 ```text
 /document-first:implement-story STORY-042 trong project PAYMENT
+/document-first:draft-tdd cho STORY-042
+/document-first:audit-document-traceability project PAYMENT
 ```
+
+Không cần gõ lệnh cũng được: mỗi skill có `description` mô tả rõ khi nào dùng, nên chỉ cần nói
+yêu cầu bằng ngôn ngữ tự nhiên là agent tự nạp skill phù hợp.
 
 Trên Claude.ai, Claude Desktop hoặc mobile, có thể dùng riêng phần connector bằng cách thêm custom
 connector với URL `https://document-api.vnzdna.com/mcp`. Full plugin gồm bundled skills được dùng
@@ -69,7 +74,7 @@ plugins/document-first/                   Plugin bundle
   .mcp.json                               Kết nối MCP dành cho Codex
   .mcp.claude.json                        Kết nối MCP/OAuth dành cho Claude
   .app.json                               Technical app mapping
-  skills/                                 Ba bundled skills công khai
+  skills/                                 13 bundled skills công khai
   README.md                               Hướng dẫn dành cho người cài
 documentation/plugin-plan.md              Kế hoạch phát hành
 documentation/plugin-public-submission.md Runbook OpenAI submission
