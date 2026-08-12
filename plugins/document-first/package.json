@@ -1,6 +1,6 @@
 {
   "name": "@document-first/codex-plugin",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "private": true,
   "description": "Thin Codex và Claude plugin kết nối tới approved-only context trên Document First.",
   "license": "UNLICENSED",
@@ -9,7 +9,6 @@
     ".claude-plugin/plugin.json",
     ".app.json",
     ".mcp.json",
-    ".mcp.claude.json",
     "assets",
     "skills",
     "README.md"

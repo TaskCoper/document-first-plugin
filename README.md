@@ -72,7 +72,7 @@ plugins/document-first/                   Plugin bundle
   .codex-plugin/plugin.json               Manifest Codex
   .claude-plugin/plugin.json              Manifest Claude
   .mcp.json                               Kết nối MCP dành cho Codex
-  .mcp.claude.json                        Kết nối MCP/OAuth dành cho Claude
+                                          (Claude khai inline trong plugin.json)
   .app.json                               Technical app mapping
   skills/                                 13 bundled skills công khai
   README.md                               Hướng dẫn dành cho người cài
