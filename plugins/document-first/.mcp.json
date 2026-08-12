@@ -9,6 +9,7 @@
         "projects:read",
         "documents:read",
         "context:prepare",
+        "documents:read.draft",
         "offline_access"
       ]
     }

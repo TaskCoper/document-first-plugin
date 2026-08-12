@@ -78,7 +78,7 @@ Với Codex, có thể chủ động bắt đầu đăng nhập bằng CLI:
 
 ```bash
 codex mcp login document-first \
-  --scopes projects:read,documents:read,context:prepare,offline_access
+  --scopes projects:read,documents:read,context:prepare,documents:read.draft,offline_access
 ```
 
 Kiểm tra MCP trong phiên Codex bằng `/mcp`, hoặc từ terminal:
@@ -137,10 +137,22 @@ Tìm các tài liệu Approved trong project PAYMENT liên quan đến refund v�
 hạn hoàn tiền. Ghi rõ document key của từng nguồn.
 ```
 
+### Review User Story trước khi phê duyệt
+
+```text
+Review STORY-042 trong project PAYMENT. Đọc nội dung hiện tại dù Story đang Draft hoặc InReview,
+chỉ ra Flow/Acceptance Criteria còn thiếu hoặc mơ hồ. Không implement source code.
+```
+
+Workflow review ưu tiên `document_first_fetch_draft`; nếu Story đã Approved thì dùng
+`document_first_get_story` hoặc `document_first_fetch`. Chỉ workflow implement mới bắt buộc Story
+đã Approved.
+
 ## 5. Bundled skills
 
 - `implement-story`: chuẩn bị và đọc approved-only context trước khi sửa code.
-- `review-impact`: xác định tài liệu, rule, contract, module và test có thể bị ảnh hưởng.
+- `review-impact`: đọc nội dung hiện tại khi review tài liệu; chỉ bắt buộc Approved khi phân tích
+  để triển khai, rồi xác định rule, contract, module và test có thể bị ảnh hưởng.
 - `verify-business-rules`: đối chiếu implementation hoặc test với nội dung đã phê duyệt.
 
 Các skill mô tả workflow công khai. Business rule thực tế và prompt nội bộ không nằm trong bundle
@@ -161,10 +173,10 @@ mà được backend trả về theo quyền của từng người dùng.
 Tất cả tool hiện tại đều read-only. Plugin không sửa tài liệu, approve nội dung, commit code hoặc
 push lên GitHub.
 
-### Tool dành cho reviewer (không có trong cấu hình mặc định)
+### Tool dành cho reviewer
 
 Hai tool dưới đây đọc nội dung **chưa được phê duyệt** nên nằm sau một scope OAuth riêng,
-`documents:read.draft`, và không được cấu hình mặc định:
+`documents:read.draft`. Scope được cấu hình mặc định nhưng vẫn hiện riêng trên màn hình consent:
 
 - `document_first_review_queue`: liệt kê tài liệu đang chờ duyệt mà chính bạn được giao làm
   reviewer hoặc approver. Chỉ trả metadata.
@@ -175,52 +187,10 @@ Phản hồi của `document_first_fetch_draft` **không có `approvalId`** và 
 nội dung có thể đổi bất cứ lúc nào nên không được trích dẫn như nguồn đã phê duyệt, cũng không
 được dùng làm căn cứ khi implement.
 
-Scope này tách riêng có chủ đích. Người dùng thường không bao giờ bị hỏi quyền đọc bản nháp, và
-token đã cấp trước đó không tự nhiên đọc được nội dung chưa duyệt.
-
-**Cách bật cho manager, tech lead hoặc reviewer.** Thêm một MCP server thứ hai bên cạnh plugin
-chính, khai scope tường minh. Plugin chính giữ nguyên, không cần gỡ.
-
-Codex — thêm vào `~/.codex/config.toml`:
-
-```toml
-[mcp_servers.document-first-review]
-type = "http"
-url = "https://document-api.vnzdna.com/mcp"
-auth = "oauth"
-oauth_resource = "https://document-api.vnzdna.com/mcp"
-scopes = [
-  "projects:read",
-  "documents:read",
-  "context:prepare",
-  "documents:read.draft",
-  "offline_access",
-]
-```
-
-Claude Code — thêm vào `.mcp.json` của dự án hoặc cấu hình người dùng:
-
-```json
-{
-  "mcpServers": {
-    "document-first-review": {
-      "type": "http",
-      "url": "https://document-api.vnzdna.com/mcp",
-      "oauth": {
-        "scopes": "projects:read documents:read context:prepare documents:read.draft offline_access"
-      }
-    }
-  }
-}
-```
-
-Sau khi thêm, mở phiên mới và hoàn tất OAuth cho server `document-first-review`. Màn hình consent
-sẽ hiện thêm một mục "Đọc tài liệu chưa phê duyệt để review".
-
-Lưu ý: `scopes_supported` trong discovery metadata của server **cố ý không liệt kê**
-`documents:read.draft`. Client MCP suy ra scope cần xin từ danh sách đó khi cấu hình không nói gì
-khác, nên quảng cáo scope này ở đấy sẽ khiến mọi người dùng thường đều bị hỏi consent. Vì vậy
-reviewer bắt buộc khai scope tường minh như trên; không có đường tự động phát hiện.
+Scope này tách riêng có chủ đích: consent luôn cho biết connector đang xin quyền review. Quyền
+OAuth không thay thế phân quyền tài liệu — chỉ Owner/Admin của project hoặc reviewer/approver được
+giao đúng tài liệu mới đọc được Draft/InReview. Token cũ chưa có scope này không tự nhiên được nới
+quyền; cần clear authentication và kết nối lại một lần.
 
 ## 7. Cập nhật plugin
 
@@ -252,7 +222,7 @@ Refresh token cũ đã hết hiệu lực, bị thu hồi hoặc không còn gi�
 ```bash
 codex mcp logout document-first
 codex mcp login document-first \
-  --scopes projects:read,documents:read,context:prepare,offline_access
+  --scopes projects:read,documents:read,context:prepare,documents:read.draft,offline_access
 ```
 
 Hoàn tất màn hình **Cho phép**, rồi mở một phiên Codex mới. Nếu lỗi tiếp tục xuất hiện ngay sau

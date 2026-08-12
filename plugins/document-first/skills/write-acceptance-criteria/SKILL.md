@@ -8,15 +8,19 @@ description: Viết hoặc rà soát Acceptance Criteria dạng Given/When/Then 
 ## Lấy nguồn chuẩn
 
 1. Xác định `projectId` và `storyKey`; gọi `document_first_list_projects` nếu cần.
-2. Gọi `document_first_get_story` để lấy Story dưới dạng field có cấu trúc. Tool trả sẵn
-   `flows.main`, `flows.alternative`, `flows.exception`, `acceptanceCriteria` đã tách
-   Given/When/Then/And, và `references.rules` — đúng những thứ cần để soát phủ, khỏi phải tự parse
-   Markdown.
-3. Đọc Business Rule chi phối bằng `document_first_list_rules` với `documentKeys` lấy từ
+2. Gọi `document_first_fetch_draft` trước để đọc nội dung hiện tại khi Story còn Draft/InReview.
+   Nếu tool trả `NOT_FOUND` vì Story đã Approved, gọi `document_first_get_story`; tool này trả sẵn
+   `flows.main`, `flows.alternative`, `flows.exception`, `acceptanceCriteria` và
+   `references.rules` dưới dạng field có cấu trúc.
+3. Với Draft/InReview, đọc các mục Flow, Acceptance Criteria và References từ Markdown được trả
+   về; luôn ghi rõ nội dung `unstable=true` và có thể thay đổi trước khi phê duyệt.
+4. Đọc Business Rule chi phối bằng `document_first_list_rules` với `documentKeys` lấy từ
    `references.rules`; một lần gọi cho tất cả rule thay vì fetch từng cái.
-4. Nếu chưa biết `storyKey`, dùng `document_first_search` để tìm trước.
-5. Chỉ dùng nội dung Approved. Dừng với `Blocked` nếu Story chưa được phê duyệt hoặc thiếu quyền.
-6. Không yêu cầu Release, GitHub commit hoặc liên kết GitHub repository.
+5. Nếu chưa biết `storyKey`, dùng `document_first_review_queue` để tìm Story được giao review;
+   `document_first_search` chỉ dùng để tìm nội dung Approved.
+6. Review không yêu cầu Story phải Approved. Dừng với `Blocked` chỉ khi thiếu quyền hoặc không tìm
+   thấy Story; không dùng Draft/InReview làm căn cứ triển khai source code.
+7. Không yêu cầu Release, GitHub commit hoặc liên kết GitHub repository.
 
 Chỉ dùng `document_first_prepare_story_context` khi cần thêm cả TDD và tài liệu semantic-related;
 để viết AC thì `document_first_get_story` gọn và chính xác hơn.
@@ -73,6 +77,7 @@ Trả các AC trong một code block Markdown sẵn sàng dán vào Story, kèm:
 
 - ma trận phủ ngắn: bước Flow hoặc Business Rule → AC tương ứng;
 - danh sách khoảng trống chưa phủ được và lý do;
-- `documentKey#contentHash` cùng `approvalId` của Story và các rule đã dùng.
+- `documentKey#contentHash` cùng `approvalId` với tài liệu Approved; hoặc `draftContentHash` và
+  `unstable=true` với Story Draft/InReview.
 
 Không sửa source code trong skill này.
