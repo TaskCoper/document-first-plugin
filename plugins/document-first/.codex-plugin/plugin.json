@@ -1,14 +1,18 @@
 {
   "name": "document-first",
-  "version": "0.5.1+codex.20260812090923",
-  "description": "K\u1ebft n\u1ed1i Codex v\u1edbi ng\u1eef c\u1ea3nh nghi\u1ec7p v\u1ee5 \u0111\u00e3 ph\u00ea duy\u1ec7t trong Document First.",
+  "version": "0.5.1+codex.20260812092508",
+  "description": "K\u1ebft n\u1ed1i Codex v\u1edbi ng\u1eef c\u1ea3nh nghi\u1ec7p v\u1ee5 v\u00e0 lu\u1ed3ng review trong Document First.",
   "author": {
     "name": "VNZ TECHNOLOGY COMPANY",
     "email": "info@vnzdna.com",
     "url": "https://document-first.vnzdna.com"
   },
   "homepage": "https://document-first.vnzdna.com",
-  "keywords": ["business-rules", "requirements", "traceability"],
+  "keywords": [
+    "business-rules",
+    "requirements",
+    "traceability"
+  ],
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "apps": "./.app.json",
@@ -21,7 +25,9 @@
     "websiteURL": "https://document-first.vnzdna.com",
     "privacyPolicyURL": "https://document-first.vnzdna.com/privacy",
     "termsOfServiceURL": "https://document-first.vnzdna.com/terms",
-    "capabilities": ["Read"],
+    "capabilities": [
+      "Read"
+    ],
     "defaultPrompt": [
       "T\u00ecm ng\u1eef c\u1ea3nh c\u1ea7n thi\u1ebft \u0111\u1ec3 tri\u1ec3n khai STORY-001.",
       "Li\u1ec7t k\u00ea c\u00e1c Business Rule li\u00ean quan \u0111\u1ebfn y\u00eau c\u1ea7u n\u00e0y.",

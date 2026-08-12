@@ -1,7 +1,7 @@
 # Document First plugin
 
-Document First cung cấp cho Codex và Claude ngữ cảnh nghiệp vụ đã được phê duyệt trước khi agent
-phân tích tác động, triển khai User Story hoặc kiểm tra Business Rule. Plugin chỉ phân phối
+Document First cung cấp cho Codex và Claude ngữ cảnh nghiệp vụ đã được phê duyệt để triển khai,
+cùng nội dung Draft/InReview được phân quyền để review trước phê duyệt. Plugin chỉ phân phối
 metadata, cấu hình kết nối MCP và các workflow công khai; dữ liệu, phân quyền, thuật toán tìm kiếm
 và logic nội bộ vẫn chạy trên backend Document First.
 
