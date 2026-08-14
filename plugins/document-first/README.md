@@ -14,8 +14,9 @@ Trước khi dùng plugin, bảo đảm rằng:
 4. Prompt gửi cho agent có ít nhất project hoặc story key đủ rõ, ví dụ `PAYMENT` và
    `STORY-042`.
 
-Tài liệu Draft, tài liệu đã mất approval hoặc tài liệu thuộc dự án không được cấp quyền sẽ không
-được MCP trả về.
+Các tool phục vụ triển khai chỉ trả tài liệu Approved. Tool `document_first_fetch_draft` có thể
+đọc Draft/InReview trong dự án mà tài khoản là thành viên; tài liệu thuộc dự án không được cấp
+quyền sẽ không được MCP trả về.
 
 ## 2. Cài plugin từ GitHub
 
@@ -180,17 +181,17 @@ Hai tool dưới đây đọc nội dung **chưa được phê duyệt** nên n�
 
 - `document_first_review_queue`: liệt kê tài liệu đang chờ duyệt mà chính bạn được giao làm
   reviewer hoặc approver. Chỉ trả metadata.
-- `document_first_fetch_draft`: đọc Markdown bản nháp của tài liệu Draft/InReview. Dành cho
-  Owner/Admin của dự án, hoặc người được giao review đúng tài liệu đó.
+- `document_first_fetch_draft`: đọc Markdown bản nháp của tài liệu Draft/InReview. Mọi thành viên
+  của dự án đều có quyền đọc; người ngoài dự án không được truy cập.
 
 Phản hồi của `document_first_fetch_draft` **không có `approvalId`** và luôn kèm `unstable: true`:
 nội dung có thể đổi bất cứ lúc nào nên không được trích dẫn như nguồn đã phê duyệt, cũng không
 được dùng làm căn cứ khi implement.
 
-Scope này tách riêng có chủ đích: consent luôn cho biết connector đang xin quyền review. Quyền
-OAuth không thay thế phân quyền tài liệu — chỉ Owner/Admin của project hoặc reviewer/approver được
-giao đúng tài liệu mới đọc được Draft/InReview. Token cũ chưa có scope này không tự nhiên được nới
-quyền; cần clear authentication và kết nối lại một lần.
+Scope này tách riêng có chủ đích: consent luôn cho biết connector đang xin quyền đọc nội dung chưa
+phê duyệt. Quyền OAuth không thay thế phân quyền project — chỉ thành viên của project mới đọc được
+Draft/InReview trong project đó. Token cũ chưa có scope này không tự nhiên được nới quyền; cần
+clear authentication và kết nối lại một lần.
 
 ## 7. Cập nhật plugin
 
