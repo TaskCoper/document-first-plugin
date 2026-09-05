@@ -1,0 +1,13 @@
+interface:
+  display_name: "Quản lý tài liệu"
+  short_description: "Tạo, sửa và xoá tài liệu trong Document First"
+  default_prompt: "Use $manage-documents to save the requested document changes in this Document First project."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "document-first"
+      description: "Document First document management"
+      transport: "streamable_http"
+      url: "https://document-api.vnzdna.com/mcp"
+policy:
+  allow_implicit_invocation: true

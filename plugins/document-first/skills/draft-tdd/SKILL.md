@@ -1,26 +1,20 @@
 ---
 name: draft-tdd
-description: Soạn bản nháp Technical Design Document theo cấu trúc Document First, gồm Context & Goals, Architecture, ba loại diagram, Data Model, Internal API, External API, References và Change Log, bám theo User Story và Business Rule đã phê duyệt. Dùng khi người dùng cần thiết kế kỹ thuật cho một Story, một tích hợp bên thứ ba hoặc một thay đổi kiến trúc trước khi viết code.
+description: Soạn bản nháp Technical Design Document theo cấu trúc Document First, gồm Context & Goals, Architecture, ba loại diagram, Data Model, Internal API, External API, References và Change Log, bám theo User Story và Business Rule hiện tại. Dùng khi người dùng cần thiết kế kỹ thuật cho một Story, một tích hợp bên thứ ba hoặc một thay đổi kiến trúc trước khi viết code.
 ---
 
 # Soạn Technical Design Document
 
-## Cổng context bắt buộc
+## Lấy context trong project
 
-1. Xác định `projectId`; gọi `document_first_list_projects` nếu người dùng chưa cung cấp.
-2. Nếu TDD phục vụ một Story, gọi `document_first_get_story`. Tool trả sẵn `acceptanceCriteria`,
-   ba nhóm `flows`, `nonFunctional`, `outOfScope` và `references` — đây đúng là bộ đầu vào để
-   dựng `Context & Goals`, ba diagram và registry `Error Codes`.
-3. Đọc Business Rule chi phối bằng `document_first_list_rules` với `documentKeys` lấy từ
-   `references.rules`. Cần TDD đã có để bám kiến trúc hiện tại thì dùng `document_first_search`
-   rồi `document_first_fetch` với `contentHash`.
-4. Dùng `document_first_prepare_story_context` thay cho bước 2 khi cần cả tài liệu
-   semantic-related, ví dụ khi thiết kế đụng nhiều module chưa rõ ranh giới.
-5. Chỉ thiết kế dựa trên nội dung Approved. Dừng với `Blocked` nếu Story hoặc rule bắt buộc chưa
-   được phê duyệt.
-6. Ghi nhận mọi `unresolvedReferences`, `missingKeys` và reference có `resolved: false` là khoảng
-   trống thiết kế, không tự lấp bằng suy đoán.
-7. Không yêu cầu Release, GitHub commit hoặc liên kết GitHub repository.
+1. Xác định `projectId`; gọi `document_first_list_projects` nếu cần.
+2. Có mã tài liệu thì dùng `document_first_fetch`; dùng `document_first_get_story` để đọc Story có cấu trúc, gồm flow, AC và reference. Dùng `document_first_search` khi cần tìm tài liệu liên quan.
+3. Duyệt Business Rule bằng `document_first_list_rules` với `limit`/`offset`, rồi đọc chi tiết bằng `documentKeys` (tối đa 20 mã/lần). Khi kiểm tra xung đột hoặc traceability, duyệt đủ các trang; search không chứng minh được danh sách đầy đủ.
+4. Cần thêm TDD, reference và tài liệu liên quan cho Story thì dùng `document_first_prepare_story_context` (contract `2026-09-05`, `evidence.readDocuments`). Context có giới hạn; đọc bổ sung tài liệu cần thiết.
+5. Mọi thành viên project được đọc tài liệu ở Draft, InReview, Approved và đã lưu trữ. Không yêu cầu phê duyệt hoặc Release để dùng nội dung làm căn cứ. Ghi lại trạng thái thực tế, không mô tả tài liệu chưa duyệt là đã duyệt.
+6. Truy vết bằng `documentKey#contentHash`; `approvalId` chỉ ghi khi có. `missingKeys`/`unresolvedReferences` là phần chưa lấy được, không tự suy đoán nội dung. `resolved` chỉ phản ánh liên kết đã tìm thấy tài liệu đích.
+
+Đọc flow/AC của Story, rule chi phối và các TDD liên quan để giữ nhất quán contract, mã lỗi và data model.
 
 ## Đối chiếu repository
 
@@ -125,6 +119,12 @@ Bỏ trống `## External API` nếu tính năng không gọi hệ thống bên 
 Trả bản nháp Markdown trong một code block, kèm:
 
 - ánh xạ từ Acceptance Criteria và Business Rule sang thành phần thiết kế chịu trách nhiệm;
-- `documentKey#contentHash` và `approvalId` đã dùng;
+- `documentKey#contentHash` và `approvalId` nếu có, của nguồn đã dùng;
 - quyết định kỹ thuật cần review cùng phương án thay thế đã cân nhắc;
-- khoảng trống do reference chưa resolve hoặc tài liệu chưa phê duyệt.
+- khoảng trống do reference chưa resolve hoặc nội dung tài liệu chưa đầy đủ.
+
+## Khi được yêu cầu lưu vào Document First
+
+Nếu người dùng yêu cầu tạo hoặc cập nhật tài liệu trong project, thực hiện ghi qua MCP theo
+[manage-documents](../manage-documents/SKILL.md), rồi trả mã tài liệu và kết quả đã lưu.
+Chỉ soạn để xem hoặc dry-run thì dùng định dạng bàn giao ở trên.

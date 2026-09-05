@@ -1,5 +1,8 @@
 # Private beta Document First plugin
 
+> Cập nhật 2026-09-05: chính sách Approved-only/chỉ đọc bên dưới là lịch sử. Plugin 0.7.0
+> đọc mọi trạng thái và hỗ trợ tạo/sửa/xoá qua scope `documents:write` + Editor; xem README hiện hành.
+
 > Luồng này đã được bỏ qua theo quyết định phát hành trực tiếp lên OpenAI Plugins Directory.
 > Tài liệu chỉ được giữ làm phương án rollback; quy trình hiện hành nằm tại
 > [`plugin-public-submission.md`](./plugin-public-submission.md).

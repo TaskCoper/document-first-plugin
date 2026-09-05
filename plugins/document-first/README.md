@@ -1,22 +1,16 @@
 # Hướng dẫn sử dụng Document First plugin
 
-Document First giúp Codex và Claude lấy đúng User Story, Acceptance Criteria, Business Rule,
-technical design và API contract đã được phê duyệt trước khi agent thay đổi code. Plugin chỉ có
-quyền đọc và chỉ nhìn thấy các dự án mà tài khoản hiện tại được cấp quyền.
+Document First giúp Codex và Claude đọc User Story, AC, Business Rule, TDD và test trong project
+mà tài khoản hiện tại là thành viên. Tất cả trạng thái đều đọc được: Draft, InReview, Approved
+và đã lưu trữ. Plugin hỗ trợ đọc, tạo, sửa và xoá cả 5 loại tài liệu. Quyền ghi cần scope `documents:write` và vai trò Editor trở lên; phê duyệt vẫn thực hiện trong ứng dụng.
 
-## 1. Chuẩn bị dữ liệu trên Document First
+## 1. Chuẩn bị
 
-Trước khi dùng plugin, bảo đảm rằng:
+Có tài khoản Document First và membership của project cần làm việc. Cung cấp project/story key
+đủ rõ để agent tìm đúng dữ liệu. Không cần phê duyệt, Release hoặc liên kết GitHub repository.
 
-1. Bạn đã có tài khoản tại <https://document-first.vnzdna.com>.
-2. Tài khoản đã được thêm vào dự án cần làm việc.
-3. User Story và các tài liệu liên quan đã được Approve.
-4. Prompt gửi cho agent có ít nhất project hoặc story key đủ rõ, ví dụ `PAYMENT` và
-   `STORY-042`.
-
-Các tool phục vụ triển khai chỉ trả tài liệu Approved. Tool `document_first_fetch_draft` có thể
-đọc Draft/InReview trong dự án mà tài khoản là thành viên; tài liệu thuộc dự án không được cấp
-quyền sẽ không được MCP trả về.
+Plugin 0.7.0 dùng contract MCP `2026-09-05`. Khi nâng cấp cần deploy backend hỗ trợ contract mới,
+cập nhật plugin và mở phiên mới.
 
 ## 2. Cài plugin từ GitHub
 
@@ -79,7 +73,7 @@ Với Codex, có thể chủ động bắt đầu đăng nhập bằng CLI:
 
 ```bash
 codex mcp login document-first \
-  --scopes projects:read,documents:read,context:prepare,documents:read.draft,offline_access
+  --scopes projects:read,documents:read,documents:write,context:prepare,documents:read.draft,offline_access
 ```
 
 Kiểm tra MCP trong phiên Codex bằng `/mcp`, hoặc từ terminal:
@@ -100,98 +94,47 @@ workflow bằng ngôn ngữ tự nhiên; agent sẽ chọn bundled skill và MCP
 có thể gọi trực tiếp `/document-first:implement-story`, `/document-first:review-impact` hoặc
 `/document-first:verify-business-rules`.
 
-### Triển khai một User Story
+### Ví dụ sử dụng
 
 ```text
-Hãy triển khai STORY-042 trong project PAYMENT. Trước khi sửa code, bắt buộc lấy và đọc toàn bộ
-approved context liên quan từ Document First. Sau khi hoàn tất, chạy các test phù hợp và đối chiếu
-kết quả với Acceptance Criteria và Business Rule đã đọc.
+Triển khai STORY-042 trong project PAYMENT theo nội dung hiện tại và các rule liên quan.
+Review STORY-042 trong project PAYMENT, chỉ ra Flow/AC còn thiếu.
+Kiểm tra implementation của STORY-042 theo Business Rule trong project.
 ```
 
-Workflow dự kiến:
-
-1. Xác định project và story.
-2. Gọi `document_first_prepare_story_context`.
-3. Đọc approved-only context và các tài liệu liên quan.
-4. Phân tích phạm vi thay đổi.
-5. Sửa code và chạy kiểm thử.
-6. Báo cáo tài liệu/rule nào đã được dùng và những điểm chưa đủ context.
-
-### Phân tích tác động trước khi sửa code
-
-```text
-Phân tích tác động của STORY-042 trong project PAYMENT. Liệt kê module, API, database, test và
-Business Rule có thể bị ảnh hưởng. Chưa thay đổi source code.
-```
-
-### Xác minh Business Rule
-
-```text
-Kiểm tra implementation hiện tại của STORY-042 trong project PAYMENT theo các Business Rule và
-Acceptance Criteria đã Approved. Nêu rõ rule nào pass, fail hoặc chưa có đủ bằng chứng.
-```
-
-### Tìm hoặc đọc tài liệu
-
-```text
-Tìm các tài liệu Approved trong project PAYMENT liên quan đến refund và tóm tắt các rule về thời
-hạn hoàn tiền. Ghi rõ document key của từng nguồn.
-```
-
-### Review User Story trước khi phê duyệt
-
-```text
-Review STORY-042 trong project PAYMENT. Đọc nội dung hiện tại dù Story đang Draft hoặc InReview,
-chỉ ra Flow/Acceptance Criteria còn thiếu hoặc mơ hồ. Không implement source code.
-```
-
-Workflow review ưu tiên `document_first_fetch_draft`; nếu Story đã Approved thì dùng
-`document_first_get_story` hoặc `document_first_fetch`. Chỉ workflow implement mới bắt buộc Story
-đã Approved.
+Agent lấy context bằng `document_first_prepare_story_context` khi triển khai Story, đọc trực tiếp
+bằng `document_first_fetch`/`document_first_get_story` khi đã biết key và dùng search để tìm nguồn
+liên quan. Mọi trạng thái đều hợp lệ để đọc; tài liệu thiếu nội dung cần được làm rõ theo yêu cầu.
 
 ## 5. Bundled skills
 
-- `implement-story`: chuẩn bị và đọc approved-only context trước khi sửa code.
-- `review-impact`: đọc nội dung hiện tại khi review tài liệu; chỉ bắt buộc Approved khi phân tích
-  để triển khai, rồi xác định rule, contract, module và test có thể bị ảnh hưởng.
-- `verify-business-rules`: đối chiếu implementation hoặc test với nội dung đã phê duyệt.
+14 skill hỗ trợ soạn Story/BR/TDD/AC, vẽ diagram, thiết kế test, implement, review và kiểm tra
+traceability. Skill đọc nội dung project ở mọi trạng thái. Khi được yêu cầu lưu, skill dùng MCP để tạo/cập nhật trực tiếp; `manage-documents` xử lý thao tác ghi và xoá. Khi chỉ yêu cầu soạn để xem, trả Markdown.
 
-Các skill mô tả workflow công khai. Business rule thực tế và prompt nội bộ không nằm trong bundle
-mà được backend trả về theo quyền của từng người dùng.
+## 6. MCP tools và bằng chứng
 
-## 6. MCP tools
+| Tool — tiền tố `document_first_` | Hành vi |
+|---|---|
+| `list_projects` | Project của người gọi |
+| `search` | Tìm tài liệu ở mọi trạng thái |
+| `fetch` | Markdown hiện tại, có thể ghim contentHash |
+| `get_document` | Đọc cấu trúc đầy đủ các section để sửa mà giữ metadata/ID |
+| `get_story` | Story dạng field, flow, AC và reference |
+| `list_rules` | Duyệt rule có phân trang hoặc đọc theo key |
+| `prepare_story_context` | Tổng hợp Story, reference, search và semantic-related |
+| `review_queue` | Metadata InReview được giao review/approve |
+| `fetch_draft` | Tool tương thích đọc mọi trạng thái; giữ draftContentHash/unstable |
+| `create_document` | Tạo một trong 5 loại, sinh mã và lưu nội dung ban đầu |
+| `update_document` | Thay các section được gửi, kiểm hash và lưu nguyên tử |
+| `delete_document` | Xoá mềm tài liệu đã được người dùng chỉ định |
 
-- `document_first_list_projects`: liệt kê dự án tài khoản hiện tại được phép đọc.
-- `document_first_search`: tìm kiếm trong nội dung Approved của dự án được phép truy cập.
-- `document_first_fetch`: đọc Markdown Approved và trả về thông tin định danh nội dung.
-- `document_first_prepare_story_context`: tìm story, resolve reference và tổng hợp approved-only
-  context cho một yêu cầu triển khai.
-- `document_first_get_story`: đọc một User Story Approved dưới dạng field có cấu trúc (metadata,
-  flow, acceptance criteria, reference) thay vì Markdown thô.
-- `document_first_list_rules`: duyệt danh sách Business Rule Approved kèm phân trang, hoặc đọc
-  Markdown đầy đủ của các rule chỉ định qua `documentKeys`.
+`documents:read` cho phép đọc mọi trạng thái trong project và cả tool tương thích. Scope cũ
+`documents:read.draft` vẫn được hỗ trợ cho hai tool review. OAuth scope không thay thế membership.
 
-Tất cả tool hiện tại đều read-only. Plugin không sửa tài liệu, approve nội dung, commit code hoặc
-push lên GitHub.
-
-### Tool dành cho reviewer
-
-Hai tool dưới đây đọc nội dung **chưa được phê duyệt** nên nằm sau một scope OAuth riêng,
-`documents:read.draft`. Scope được cấu hình mặc định nhưng vẫn hiện riêng trên màn hình consent:
-
-- `document_first_review_queue`: liệt kê tài liệu đang chờ duyệt mà chính bạn được giao làm
-  reviewer hoặc approver. Chỉ trả metadata.
-- `document_first_fetch_draft`: đọc Markdown bản nháp của tài liệu Draft/InReview. Mọi thành viên
-  của dự án đều có quyền đọc; người ngoài dự án không được truy cập.
-
-Phản hồi của `document_first_fetch_draft` **không có `approvalId`** và luôn kèm `unstable: true`:
-nội dung có thể đổi bất cứ lúc nào nên không được trích dẫn như nguồn đã phê duyệt, cũng không
-được dùng làm căn cứ khi implement.
-
-Scope này tách riêng có chủ đích: consent luôn cho biết connector đang xin quyền đọc nội dung chưa
-phê duyệt. Quyền OAuth không thay thế phân quyền project — chỉ thành viên của project mới đọc được
-Draft/InReview trong project đó. Token cũ chưa có scope này không tự nhiên được nới quyền; cần
-clear authentication và kết nối lại một lần.
+Kết quả có `approvalState`, `isArchived` và hash tính từ nội dung được trả về; `approvalId` và
+`approvedAt` chỉ có khi tồn tại phê duyệt hợp lệ. Truy vết bằng `documentKey#contentHash`.
+Context có `evidence.searched` và `evidence.readDocuments`, tối đa 20 tài liệu; đọc bổ sung khi cần.
+`missingKeys`/`unresolvedReferences` không đồng nghĩa với chưa phê duyệt.
 
 ## 7. Cập nhật plugin
 
@@ -223,7 +166,7 @@ Refresh token cũ đã hết hiệu lực, bị thu hồi hoặc không còn gi�
 ```bash
 codex mcp logout document-first
 codex mcp login document-first \
-  --scopes projects:read,documents:read,context:prepare,documents:read.draft,offline_access
+  --scopes projects:read,documents:read,documents:write,context:prepare,documents:read.draft,offline_access
 ```
 
 Hoàn tất màn hình **Cho phép**, rồi mở một phiên Codex mới. Nếu lỗi tiếp tục xuất hiện ngay sau
@@ -256,8 +199,8 @@ Tài khoản OAuth chưa được cấp quyền vào project hoặc quyền vừ
 
 ### Tìm kiếm không có kết quả
 
-Chỉ nội dung Approved mới được trả về. Kiểm tra trạng thái approval, project/story key và thử câu
-truy vấn cụ thể hơn. Không dùng tài liệu của project khác để thay thế khi thiếu context.
+Kiểm tra membership, project/story key và thử truy vấn cụ thể hơn. Draft/InReview vẫn tìm được.
+Tài liệu đã xoá không được trả về; dùng fetch khi biết chính xác key.
 
 ### Gỡ cài đặt Codex
 
@@ -286,3 +229,12 @@ claude plugin marketplace remove document-first-local
 - Chính sách riêng tư: <https://document-first.vnzdna.com/privacy>
 - Điều khoản sử dụng: <https://document-first.vnzdna.com/terms>
 - Email: <info@vnzdna.com>
+
+### Quyền ghi tài liệu từ MCP
+
+Ba tool `document_first_create_document`, `document_first_update_document` và
+`document_first_delete_document` cần `documents:write` và vai trò Editor/Admin/Owner.
+Sau khi deploy backend mới, kết nối OAuth lại để cấp scope ghi; token chỉ đọc cũ không tự có quyền ghi.
+Sửa cần đọc `get_document` để giữ đủ metadata/ID; sửa/xoá cần `expectedContentHash` hiện tại. Section không gửi được giữ nguyên; section được gửi
+thay toàn bộ nội dung, mảng rỗng xoá section. Không tự ghi lại khi báo xung đột hoặc mất phản hồi:
+đọc và đối chiếu trạng thái trước. Thay đổi nội dung Approved/InReview đưa tài liệu về Draft.

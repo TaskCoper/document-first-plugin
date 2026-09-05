@@ -1,6 +1,6 @@
 {
   "name": "@document-first/codex-plugin",
-  "version": "0.5.1",
+  "version": "0.7.0",
   "private": true,
   "description": "Thin Codex và Claude plugin kết nối tới context triển khai và review trên Document First.",
   "license": "UNLICENSED",

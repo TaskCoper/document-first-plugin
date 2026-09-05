@@ -1,12 +1,12 @@
 interface:
   display_name: "Review Document Impact"
-  short_description: "Phân tích tác động từ tài liệu đã phê duyệt"
-  default_prompt: "Use $review-impact to identify approved requirements and code paths affected by this change."
+  short_description: "Phân tích tác động từ tài liệu hiện tại"
+  default_prompt: "Use $review-impact to identify project requirements and code paths affected by this change."
 dependencies:
   tools:
     - type: "mcp"
       value: "document-first"
-      description: "Document First approved-document context"
+      description: "Document First project document context"
       transport: "streamable_http"
       url: "https://document-api.vnzdna.com/mcp"
 policy:

@@ -1,9 +1,9 @@
 # Document First plugin
 
-Document First cung cấp cho Codex và Claude ngữ cảnh nghiệp vụ đã được phê duyệt để triển khai,
-cùng nội dung Draft/InReview được phân quyền để review trước phê duyệt. Plugin chỉ phân phối
-metadata, cấu hình kết nối MCP và các workflow công khai; dữ liệu, phân quyền, thuật toán tìm kiếm
-và logic nội bộ vẫn chạy trên backend Document First.
+Document First cung cấp cho Codex và Claude nội dung hiện tại của mọi tài liệu trong project mà
+tài khoản là thành viên. Draft, InReview, Approved và tài liệu đã lưu trữ đều có thể dùng để đọc,
+review và triển khai. Plugin phân phối metadata, cấu hình MCP và workflow; backend giữ dữ liệu,
+phân quyền và logic tìm kiếm. Plugin 0.7.0 dùng contract MCP `2026-09-05`.
 
 ## Cài cho Codex từ GitHub
 
@@ -11,7 +11,7 @@ Yêu cầu:
 
 - Codex CLI phiên bản có hỗ trợ plugin.
 - Tài khoản Document First được cấp quyền vào ít nhất một dự án.
-- Dự án có tài liệu ở trạng thái Approved nếu muốn tìm kiếm hoặc chuẩn bị context.
+- Tài khoản được phép đọc tài liệu trong project; không yêu cầu phê duyệt.
 
 Thêm GitHub repository làm marketplace rồi cài plugin:
 
@@ -48,7 +48,7 @@ claude plugin validate plugins/document-first
 claude --plugin-dir ./plugins/document-first
 ```
 
-Claude Code tự nạp 13 skill dưới namespace `document-first`. Ví dụ:
+Claude Code tự nạp 14 skill dưới namespace `document-first`. Ví dụ:
 
 ```text
 /document-first:implement-story STORY-042 trong project PAYMENT
@@ -74,7 +74,7 @@ plugins/document-first/                   Plugin bundle
   .mcp.json                               Kết nối MCP dành cho Codex
                                           (Claude khai inline trong plugin.json)
   .app.json                               Technical app mapping
-  skills/                                 13 bundled skills công khai
+  skills/                                 14 bundled skills công khai
   README.md                               Hướng dẫn dành cho người cài
 documentation/plugin-plan.md              Kế hoạch phát hành
 documentation/plugin-public-submission.md Runbook OpenAI submission
@@ -125,7 +125,7 @@ Mọi file trong plugin đều có thể được người cài đọc. Không �
 - OAuth token, demo password, registry credential hoặc production secret;
 - dữ liệu tài liệu của khách hàng.
 
-Plugin chỉ đọc tài liệu Approved trong những dự án mà người dùng được cấp quyền. Access token và
+Plugin đọc mọi tài liệu chưa xoá trong những dự án mà người dùng là thành viên. Access token và
 refresh token được xử lý qua OAuth; người dùng không phải sao chép token vào source code.
 
 ## Phát hành public
@@ -134,3 +134,12 @@ Plugin Codex/ChatGPT được submit trực tiếp qua OpenAI Plugin Submission 
 MCP**. Bản Claude được phân phối qua GitHub marketplace và dùng cùng remote MCP, OAuth và bundled
 skills. Không publish package lên npm. Xem [kế hoạch plugin](documentation/plugin-plan.md) và
 [runbook public submission](documentation/plugin-public-submission.md) trước khi tạo phiên bản mới.
+
+### Quyền ghi tài liệu từ MCP
+
+Ba tool `document_first_create_document`, `document_first_update_document` và
+`document_first_delete_document` cần `documents:write` và vai trò Editor/Admin/Owner.
+Sau khi deploy backend mới, kết nối OAuth lại để cấp scope ghi; token chỉ đọc cũ không tự có quyền ghi.
+Sửa/xoá cần `expectedContentHash` từ `fetch`. Section không gửi được giữ nguyên; section được gửi
+thay toàn bộ nội dung, mảng rỗng xoá section. Không tự ghi lại khi báo xung đột hoặc mất phản hồi:
+đọc và đối chiếu trạng thái trước. Thay đổi nội dung Approved/InReview đưa tài liệu về Draft.

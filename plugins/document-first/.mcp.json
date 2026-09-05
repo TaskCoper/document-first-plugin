@@ -8,6 +8,7 @@
       "scopes": [
         "projects:read",
         "documents:read",
+        "documents:write",
         "context:prepare",
         "documents:read.draft",
         "offline_access"

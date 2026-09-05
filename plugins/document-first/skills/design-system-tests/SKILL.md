@@ -1,23 +1,20 @@
 ---
 name: design-system-tests
-description: Thiết kế system test và end-to-end test đi hết một User Story đã phê duyệt trong Document First, phủ Main Flow, Alternative Flow, Exception Flow và ràng buộc Non-Functional, mỗi ca truy vết về Acceptance Criteria. Dùng khi cần bộ test nghiệm thu cho một feature trước khi release; không dùng cho test ở mức hàm hay validator.
+description: Thiết kế system test và end-to-end test đi hết một User Story hiện tại trong Document First, phủ Main Flow, Alternative Flow, Exception Flow và ràng buộc Non-Functional, mỗi ca truy vết về Acceptance Criteria. Dùng khi cần bộ test nghiệm thu cho một feature trước khi release; không dùng cho test ở mức hàm hay validator.
 ---
 
 # Thiết kế System Test
 
-## Cổng context bắt buộc
+## Lấy context trong project
 
-1. Xác định `projectId` và `storyKey`; gọi `document_first_list_projects` nếu cần.
-2. Gọi `document_first_get_story` để lấy `acceptanceCriteria` đã tách Given/When/Then/And, ba
-   nhóm `flows`, `nonFunctional` và `outOfScope` — đây chính là danh sách cần phủ, không phải tự
-   parse từ Markdown.
-3. Đọc Business Rule bằng `document_first_list_rules` với `documentKeys` từ `references.rules`.
-4. Lấy `Error Codes` và `State Diagram` của TDD qua `document_first_search` rồi
-   `document_first_fetch` với `contentHash`. Dùng `document_first_prepare_story_context` khi muốn
-   gom cả cụm tài liệu liên quan trong một lần.
-5. Chỉ dùng nội dung Approved làm nguồn kỳ vọng. Dừng với `Blocked` nếu Story chưa được phê duyệt
-   hoặc thiếu quyền đọc.
-6. Không yêu cầu Release, GitHub commit hoặc liên kết GitHub repository.
+1. Xác định `projectId`; gọi `document_first_list_projects` nếu cần.
+2. Có mã tài liệu thì dùng `document_first_fetch`; dùng `document_first_get_story` để đọc Story có cấu trúc, gồm flow, AC và reference. Dùng `document_first_search` khi cần tìm tài liệu liên quan.
+3. Duyệt Business Rule bằng `document_first_list_rules` với `limit`/`offset`, rồi đọc chi tiết bằng `documentKeys` (tối đa 20 mã/lần). Khi kiểm tra xung đột hoặc traceability, duyệt đủ các trang; search không chứng minh được danh sách đầy đủ.
+4. Cần thêm TDD, reference và tài liệu liên quan cho Story thì dùng `document_first_prepare_story_context` (contract `2026-09-05`, `evidence.readDocuments`). Context có giới hạn; đọc bổ sung tài liệu cần thiết.
+5. Mọi thành viên project được đọc tài liệu ở Draft, InReview, Approved và đã lưu trữ. Không yêu cầu phê duyệt hoặc Release để dùng nội dung làm căn cứ. Ghi lại trạng thái thực tế, không mô tả tài liệu chưa duyệt là đã duyệt.
+6. Truy vết bằng `documentKey#contentHash`; `approvalId` chỉ ghi khi có. `missingKeys`/`unresolvedReferences` là phần chưa lấy được, không tự suy đoán nội dung. `resolved` chỉ phản ánh liên kết đã tìm thấy tài liệu đích.
+
+Dùng `flows.main`, `flows.alternative`, `flows.exception`, `acceptanceCriteria` và `nonFunctional` của Story để thiết kế hành trình nghiệm thu; đối chiếu contract trong TDD.
 
 ## Phạm vi
 
@@ -57,7 +54,7 @@ Nêu rõ ca nào tự động hóa được và ca nào phải kiểm thủ côn
 - Mọi phần tử `acceptanceCriteria` đều được phủ.
 - Mọi phần tử `flows.alternative` và `flows.exception` đều có ca tương ứng.
 - Không có ca nào kiểm phần nằm trong `outOfScope`.
-- Kỳ vọng lấy từ tài liệu đã duyệt, không lấy từ hành vi hiện tại của hệ thống.
+- Kỳ vọng lấy từ tài liệu hiện tại, không lấy từ hành vi hiện tại của hệ thống.
 - Các ca độc lập nhau về dữ liệu, chạy được theo bất kỳ thứ tự nào.
 
 ## Bàn giao
@@ -67,6 +64,12 @@ Trả đặc tả test kèm:
 - ma trận phủ: `code` của acceptance criteria và của nhánh flow → mã ca tương ứng;
 - phần chưa phủ được và lý do;
 - test đã tồn tại trong repository có thể tái sử dụng;
-- `documentKey#contentHash` và `approvalId` đã dùng.
+- `documentKey#contentHash` và `approvalId` nếu có, của nguồn đã dùng.
 
 Chỉ viết code test khi người dùng yêu cầu rõ; mặc định skill này dừng ở đặc tả.
+
+## Khi được yêu cầu lưu vào Document First
+
+Nếu người dùng yêu cầu tạo hoặc cập nhật tài liệu trong project, thực hiện ghi qua MCP theo
+[manage-documents](../manage-documents/SKILL.md), rồi trả mã tài liệu và kết quả đã lưu.
+Chỉ soạn để xem hoặc dry-run thì dùng định dạng bàn giao ở trên.

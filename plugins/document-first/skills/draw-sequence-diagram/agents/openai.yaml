@@ -6,7 +6,7 @@ dependencies:
   tools:
     - type: "mcp"
       value: "document-first"
-      description: "Document First approved-document context"
+      description: "Document First project document context"
       transport: "streamable_http"
       url: "https://document-api.vnzdna.com/mcp"
 policy:

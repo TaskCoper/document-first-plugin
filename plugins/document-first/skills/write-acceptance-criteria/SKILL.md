@@ -1,29 +1,20 @@
 ---
 name: write-acceptance-criteria
-description: Viết hoặc rà soát Acceptance Criteria dạng Given/When/Then cho một User Story đã có trong Document First, bám theo Main Flow, Alternative Flow, Exception Flow và Business Rule đã phê duyệt. Dùng khi người dùng nói AC còn thiếu, mơ hồ, không kiểm thử được, hoặc cần bổ sung tiêu chí trước khi implement; không dùng để soạn mới toàn bộ Story.
+description: Viết hoặc rà soát Acceptance Criteria dạng Given/When/Then cho một User Story đã có trong Document First, bám theo Main Flow, Alternative Flow, Exception Flow và Business Rule hiện tại. Dùng khi người dùng nói AC còn thiếu, mơ hồ, không kiểm thử được, hoặc cần bổ sung tiêu chí trước khi implement; không dùng để soạn mới toàn bộ Story.
 ---
 
 # Viết Acceptance Criteria
 
-## Lấy nguồn chuẩn
+## Lấy context trong project
 
-1. Xác định `projectId` và `storyKey`; gọi `document_first_list_projects` nếu cần.
-2. Gọi `document_first_fetch_draft` trước để đọc nội dung hiện tại khi Story còn Draft/InReview.
-   Nếu tool trả `NOT_FOUND` vì Story đã Approved, gọi `document_first_get_story`; tool này trả sẵn
-   `flows.main`, `flows.alternative`, `flows.exception`, `acceptanceCriteria` và
-   `references.rules` dưới dạng field có cấu trúc.
-3. Với Draft/InReview, đọc các mục Flow, Acceptance Criteria và References từ Markdown được trả
-   về; luôn ghi rõ nội dung `unstable=true` và có thể thay đổi trước khi phê duyệt.
-4. Đọc Business Rule chi phối bằng `document_first_list_rules` với `documentKeys` lấy từ
-   `references.rules`; một lần gọi cho tất cả rule thay vì fetch từng cái.
-5. Nếu chưa biết `storyKey`, dùng `document_first_review_queue` để tìm Story được giao review;
-   `document_first_search` chỉ dùng để tìm nội dung Approved.
-6. Review không yêu cầu Story phải Approved. Dừng với `Blocked` chỉ khi thiếu quyền hoặc không tìm
-   thấy Story; không dùng Draft/InReview làm căn cứ triển khai source code.
-7. Không yêu cầu Release, GitHub commit hoặc liên kết GitHub repository.
+1. Xác định `projectId`; gọi `document_first_list_projects` nếu cần.
+2. Có mã tài liệu thì dùng `document_first_fetch`; dùng `document_first_get_story` để đọc Story có cấu trúc, gồm flow, AC và reference. Dùng `document_first_search` khi cần tìm tài liệu liên quan.
+3. Duyệt Business Rule bằng `document_first_list_rules` với `limit`/`offset`, rồi đọc chi tiết bằng `documentKeys` (tối đa 20 mã/lần). Khi kiểm tra xung đột hoặc traceability, duyệt đủ các trang; search không chứng minh được danh sách đầy đủ.
+4. Cần thêm TDD, reference và tài liệu liên quan cho Story thì dùng `document_first_prepare_story_context` (contract `2026-09-05`, `evidence.readDocuments`). Context có giới hạn; đọc bổ sung tài liệu cần thiết.
+5. Mọi thành viên project được đọc tài liệu ở Draft, InReview, Approved và đã lưu trữ. Không yêu cầu phê duyệt hoặc Release để dùng nội dung làm căn cứ. Ghi lại trạng thái thực tế, không mô tả tài liệu chưa duyệt là đã duyệt.
+6. Truy vết bằng `documentKey#contentHash`; `approvalId` chỉ ghi khi có. `missingKeys`/`unresolvedReferences` là phần chưa lấy được, không tự suy đoán nội dung. `resolved` chỉ phản ánh liên kết đã tìm thấy tài liệu đích.
 
-Chỉ dùng `document_first_prepare_story_context` khi cần thêm cả TDD và tài liệu semantic-related;
-để viết AC thì `document_first_get_story` gọn và chính xác hơn.
+Đọc AC hiện có và từng nhánh flow bằng `get_story` trước khi bổ sung; đối chiếu rule chi phối để tránh AC trùng hoặc mâu thuẫn.
 
 ## Suy ra tiêu chí
 
@@ -39,7 +30,7 @@ Duyệt có hệ thống, không viết theo cảm tính:
 
 Không tạo AC cho phần nằm trong `outOfScope`.
 
-Reference có `resolved: false` là tài liệu đích chưa tồn tại: ghi nhận thành khoảng trống, không
+Reference có `resolved: false` là liên kết chưa resolve được tài liệu đích: ghi nhận thành khoảng trống, không
 tự suy ra nội dung rule rồi viết AC dựa trên đó.
 
 ## Định dạng
@@ -67,7 +58,7 @@ Giữ đúng cấu trúc mà Document First parse:
 Trước khi trả kết quả, tự soát từng AC:
 
 - có thể viết thành một test case cụ thể không;
-- có mâu thuẫn với AC khác hoặc với Business Rule đã duyệt không;
+- có mâu thuẫn với AC khác hoặc với Business Rule hiện tại không;
 - có bước nào của Flow chưa được AC nào phủ không;
 - có AC nào mô tả cách hiện thực hóa thay vì hành vi quan sát được không.
 
@@ -77,7 +68,13 @@ Trả các AC trong một code block Markdown sẵn sàng dán vào Story, kèm:
 
 - ma trận phủ ngắn: bước Flow hoặc Business Rule → AC tương ứng;
 - danh sách khoảng trống chưa phủ được và lý do;
-- `documentKey#contentHash` cùng `approvalId` với tài liệu Approved; hoặc `draftContentHash` và
+- `documentKey#contentHash` cùng `approvalId` nếu có với tài liệu hiện tại; hoặc `draftContentHash` và
   `unstable=true` với Story Draft/InReview.
 
 Không sửa source code trong skill này.
+
+## Khi được yêu cầu lưu vào Document First
+
+Nếu người dùng yêu cầu tạo hoặc cập nhật tài liệu trong project, thực hiện ghi qua MCP theo
+[manage-documents](../manage-documents/SKILL.md), rồi trả mã tài liệu và kết quả đã lưu.
+Chỉ soạn để xem hoặc dry-run thì dùng định dạng bàn giao ở trên.

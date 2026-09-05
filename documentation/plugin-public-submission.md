@@ -1,5 +1,8 @@
 # Public submission Document First plugin
 
+> Cập nhật 2026-09-05: chính sách Approved-only/chỉ đọc bên dưới là lịch sử. Plugin 0.7.0
+> đọc mọi trạng thái và hỗ trợ tạo/sửa/xoá qua scope `documents:write` + Editor; xem README hiện hành.
+
 ## Kênh phát hành
 
 Document First được submit trực tiếp qua OpenAI Plugin Submission Portal tại

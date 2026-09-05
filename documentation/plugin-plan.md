@@ -1,5 +1,8 @@
 # Kế hoạch xây dựng Document First plugin
 
+> Cập nhật 2026-09-05: chính sách Approved-only/chỉ đọc bên dưới là lịch sử. Plugin 0.7.0
+> đọc mọi trạng thái và hỗ trợ tạo/sửa/xoá qua scope `documents:write` + Editor; xem README hiện hành.
+
 ## 1. Mục tiêu
 
 Xây dựng một plugin Document First có thể cài đặt trên Codex và ChatGPT, cho phép agent

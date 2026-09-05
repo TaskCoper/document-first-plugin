@@ -5,17 +5,16 @@ description: Soạn bản nháp User Story theo đúng cấu trúc Markdown củ
 
 # Soạn User Story
 
-## Thu thập context
+## Lấy context trong project
 
-1. Xác định `projectId`; gọi `document_first_list_projects` nếu người dùng chưa cung cấp.
-2. Gọi `document_first_search` với từ khóa của yêu cầu để tìm Story và TDD đã phê duyệt có liên
-   quan. Đọc Story nghi trùng bằng `document_first_get_story` để so cấu trúc `flows` và
-   `acceptanceCriteria` thay vì so tiêu đề.
-3. Nếu đã có Story trùng phạm vi, dừng lại và báo `documentKey` đó thay vì soạn bản trùng lặp.
-4. Duyệt Business Rule của project bằng `document_first_list_rules` để mục `References / Rules`
-   chỉ chứa `documentKey` có thật; đọc chi tiết rule cần bám bằng `documentKeys`.
-5. Chỉ dùng nội dung Approved làm căn cứ. Không suy đoán Business Rule chưa được phê duyệt.
-6. Không yêu cầu Release, GitHub commit hoặc liên kết GitHub repository.
+1. Xác định `projectId`; gọi `document_first_list_projects` nếu cần.
+2. Có mã tài liệu thì dùng `document_first_fetch`; dùng `document_first_get_story` để đọc Story có cấu trúc, gồm flow, AC và reference. Dùng `document_first_search` khi cần tìm tài liệu liên quan.
+3. Duyệt Business Rule bằng `document_first_list_rules` với `limit`/`offset`, rồi đọc chi tiết bằng `documentKeys` (tối đa 20 mã/lần). Khi kiểm tra xung đột hoặc traceability, duyệt đủ các trang; search không chứng minh được danh sách đầy đủ.
+4. Cần thêm TDD, reference và tài liệu liên quan cho Story thì dùng `document_first_prepare_story_context` (contract `2026-09-05`, `evidence.readDocuments`). Context có giới hạn; đọc bổ sung tài liệu cần thiết.
+5. Mọi thành viên project được đọc tài liệu ở Draft, InReview, Approved và đã lưu trữ. Không yêu cầu phê duyệt hoặc Release để dùng nội dung làm căn cứ. Ghi lại trạng thái thực tế, không mô tả tài liệu chưa duyệt là đã duyệt.
+6. Truy vết bằng `documentKey#contentHash`; `approvalId` chỉ ghi khi có. `missingKeys`/`unresolvedReferences` là phần chưa lấy được, không tự suy đoán nội dung. `resolved` chỉ phản ánh liên kết đã tìm thấy tài liệu đích.
+
+Trước khi soạn Story mới, search nội dung liên quan và đọc Story nghi trùng bằng `get_story` để so flow/AC. Nếu đã có Story trùng phạm vi, báo mã đó trước khi tạo thêm tài liệu.
 
 ## Làm rõ trước khi viết
 
@@ -121,6 +120,12 @@ chính tả của heading:
 
 Trả bản nháp Markdown hoàn chỉnh trong một code block để người dùng dán vào Document First, kèm:
 
-- danh sách `documentKey#contentHash` và `approvalId` đã dùng làm căn cứ;
+- danh sách `documentKey#contentHash` và `approvalId` nếu có, của nguồn đã dùng làm căn cứ;
 - các mục `TODO(cần xác nhận)` còn lại;
-- giả định không xuất phát từ tài liệu đã phê duyệt.
+- giả định không xuất phát từ tài liệu hiện tại.
+
+## Khi được yêu cầu lưu vào Document First
+
+Nếu người dùng yêu cầu tạo hoặc cập nhật tài liệu trong project, thực hiện ghi qua MCP theo
+[manage-documents](../manage-documents/SKILL.md), rồi trả mã tài liệu và kết quả đã lưu.
+Chỉ soạn để xem hoặc dry-run thì dùng định dạng bàn giao ở trên.

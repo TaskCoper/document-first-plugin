@@ -1,8 +1,8 @@
 {
   "name": "document-first",
   "displayName": "Document First",
-  "version": "0.5.1",
-  "description": "Kết nối Claude với ngữ cảnh nghiệp vụ và luồng review trong Document First.",
+  "version": "0.7.0",
+  "description": "Đọc, tạo, sửa và xoá tài liệu Document First qua MCP.",
   "author": {
     "name": "VNZ TECHNOLOGY COMPANY",
     "email": "info@vnzdna.com",
@@ -21,7 +21,7 @@
       "type": "http",
       "url": "https://document-api.vnzdna.com/mcp",
       "oauth": {
-        "scopes": "projects:read documents:read context:prepare documents:read.draft offline_access"
+        "scopes": "projects:read documents:read documents:write context:prepare documents:read.draft offline_access"
       }
     }
   }

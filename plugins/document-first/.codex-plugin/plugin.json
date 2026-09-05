@@ -1,7 +1,7 @@
 {
   "name": "document-first",
-  "version": "0.5.1+codex.20260812092508",
-  "description": "K\u1ebft n\u1ed1i Codex v\u1edbi ng\u1eef c\u1ea3nh nghi\u1ec7p v\u1ee5 v\u00e0 lu\u1ed3ng review trong Document First.",
+  "version": "0.7.0+codex.20260905062032",
+  "description": "\u0110\u1ecdc, t\u1ea1o, s\u1eeda v\u00e0 xo\u00e1 t\u00e0i li\u1ec7u Document First qua MCP.",
   "author": {
     "name": "VNZ TECHNOLOGY COMPANY",
     "email": "info@vnzdna.com",
@@ -18,15 +18,16 @@
   "apps": "./.app.json",
   "interface": {
     "displayName": "Document First",
-    "shortDescription": "Tra c\u1ee9u y\u00eau c\u1ea7u v\u00e0 quy t\u1eafc nghi\u1ec7p v\u1ee5",
-    "longDescription": "Cung c\u1ea5p cho Codex ng\u1eef c\u1ea3nh User Story, Business Rule, TDD, API contract v\u00e0 t\u00e0i li\u1ec7u li\u00ean quan th\u00f4ng qua MCP server c\u1ee7a Document First.",
+    "shortDescription": "\u0110\u1ecdc v\u00e0 qu\u1ea3n l\u00fd t\u00e0i li\u1ec7u trong d\u1ef1 \u00e1n",
+    "longDescription": "\u0110\u1ecdc ng\u1eef c\u1ea3nh, t\u1ea1o, s\u1eeda v\u00e0 xo\u00e1 User Story, Business Rule, TDD, Unit Test v\u00e0 System Test theo quy\u1ec1n trong project qua MCP.",
     "developerName": "VNZ TECHNOLOGY COMPANY",
     "category": "Developer Tools",
     "websiteURL": "https://document-first.vnzdna.com",
     "privacyPolicyURL": "https://document-first.vnzdna.com/privacy",
     "termsOfServiceURL": "https://document-first.vnzdna.com/terms",
     "capabilities": [
-      "Read"
+      "Read",
+      "Write"
     ],
     "defaultPrompt": [
       "T\u00ecm ng\u1eef c\u1ea3nh c\u1ea7n thi\u1ebft \u0111\u1ec3 tri\u1ec3n khai STORY-001.",
